@@ -1,0 +1,311 @@
+<view wx:if="{{isHide}}">
+    <view wx:if="{{canIUse}}" >
+        <view class='header'>
+            <view>
+                <open-data type='userAvatarUrl' ></open-data>
+            </view>
+            <view>
+                <open-data type='userNickName' class='nickname'></open-data>
+            </view>
+        </view>
+        <view class='content'>
+            <view>申请获取以下权限</view>
+            <text>获得你的公开信息(昵称，头像等)</text>
+        </view>
+        <button class='bottom' type='primary' open-type="getUserInfo" lang="zh_CN" bindgetuserinfo="bindGetUserInfo">
+            授权登录
+        </button>
+    </view>
+    <view wx:else>请升级微信版本</view>
+</view>
+<view wx:else>
+    <view class="page" xmlns:wx="http://www.w3.org/1999/xhtml">
+    <view class="page__hd">
+        <view class="page__title">>基本信息></view>
+        <!-- <view class="page__desc">表单输入</view> -->
+    </view>
+    <view class="page__bd">
+        <form id="form" bindsubmit="formSubmit" rules="{{rules}}" models="{{formData}}">
+            <!-- <mp-cells title="单选列表项">
+                <mp-checkbox-group prop="radio" multi="{{false}}" bindchange="radioChange">
+                    <mp-checkbox wx:for="{{radioItems}}" wx:key="value" label="{{item.name}}" value="{{item.value}}" checked="{{item.checked}}"></mp-checkbox>
+                </mp-checkbox-group>
+            </mp-cells>
+            <mp-cells title="复选列表项">
+                <mp-checkbox-group prop="checkbox" multi="{{true}}" bindchange="checkboxChange">
+                    <mp-checkbox wx:for="{{checkboxItems}}" wx:key="value" label="{{item.name}}" value="{{item.value}}" checked="{{item.checked}}"></mp-checkbox>
+                </mp-checkbox-group>
+            </mp-cells> -->
+            <mp-cell  title="房屋地址" ext-class="">
+                <view class="weui-cell weui-cell_select">
+                    <view class="weui-cell__bd">
+                        <picker  mode="multiSelector" value="{{multiIndex}}" bindchange="bindMultiPickerChange" bindcolumnchange="bindMultiPickerColumnChange" range="{{multiArray}}" range-key="name">
+                            <view class="weui-input">{{selectAddr?(multiArray[0][multiIndex[0]].name):'镇'}}--{{selectAddr?multiArray[1][multiIndex[1]].name:'村'}}--{{selectAddr?multiArray[2][multiIndex[2]].name:'组'}}</view>
+                            <!-- <input value='{{multiArray[0][multiIndex[0]]}} {{multiArray[1][multiIndex[1]]}}'></input> -->
+                            <!-- <view class="weui-input">{{town}} {{village}} {{group}}</view> -->
+                        </picker>
+                    </view>
+                </view>
+            </mp-cell>
+            <mp-cell prop="qq" title="详细地址" ext-class="">
+                <input bindinput="formInputChange1" data-field="qq" class="weui-input" placeholder="请输入详细地址"/>
+            </mp-cell>
+            <mp-cells title="户籍资料">
+                <mp-cell title="权利人类型">
+                    <view class="weui-cell weui-cell_select">
+                        <view class="weui-cell__bd">
+                            <picker bindchange="bindAccountChange" value="{{obligeeIndex}}" range="{{obligees}}">
+                                <view class="weui-input">{{obligees[obligeeIndex]}}</view>
+                            </picker>
+                        </view>
+                    </view>
+                </mp-cell>
+                <mp-cell title="证件类型">
+                    <view class="weui-cell weui-cell_select">
+                        <view class="weui-cell__bd">
+                            <picker bindchange="bindAccountChange" value="{{cardIndex}}" range="{{cards}}">
+                                <view class="weui-input">{{cards[cardIndex]}}</view>
+                            </picker>
+                        </view>
+                    </view>
+                </mp-cell>
+                <mp-cell>
+                <ocr-navigator bind:onSuccess="success" certificateType="idCard" opposite="{{false}}" style="margin:0 auto;float:left;width:40%;">
+                    <view class="iconfont icon-shenfenzhengzhengmian" style="font-size:80px;"></view>
+                    <text style="font-size:12px;text-align:center;">身份证人像面上传</text>
+                    <!-- <button type="primary" data-field="front">身份证正面识别</button> -->
+                </ocr-navigator>
+                <ocr-navigator bind:onSuccess="success" certificateType="idCard" opposite="{{true}}" style="margin:0 auto;float:right;width:40%;">
+                    <view class="iconfont icon-shenfenzhengbeimian" style="font-size:80px;"></view>
+                    <text style="font-size:12px;text-align:center;">身份证国徽面上传</text>
+                    <!-- <button type="primary" style="margin-top:20rpx;" data-field="back">身份证反面识别</button> -->
+                </ocr-navigator>
+                </mp-cell>
+                <mp-cell prop="name" title="姓名" ext-class="">
+                    <input bindinput="formInputChange1" data-field="name" class="weui-input" placeholder="请输入姓名"/>
+                </mp-cell>
+                <!-- <mp-cell class="page-section-title" title="性别">
+                  <radio-group name="radio" data-field="sex" bindchange="checkboxChange" style="margin-left:20%;">
+                    <label><radio value="man"/>男</label>
+                    <label style="margin-left:20rpx;"><radio value="woman"/>女</label>
+                  </radio-group>
+                </mp-cell> -->
+                <!-- <mp-cell class="page-section-title" title="是否户主">
+                  <radio-group name="radio" data-field="isHouseHold" bindchange="radioChange" style="margin-left:20%;">
+                    <label><radio value="yes"/>是</label>
+                    <label style="margin-left:20rpx;"><radio value="no"/>否</label>
+                  </radio-group>
+                </mp-cell> -->
+                <mp-cell show-error prop="idcard" title="证件号码" ext-class="">
+                    <input bindinput="formInputChange1" data-field="idcard" class="weui-input" placeholder="请输入证件号码"/>
+                </mp-cell>
+                <mp-cell>
+                    <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}"  files="{{files}}" max-count="1" title="户主页上传" id="register" bindtap="showRegister" upload="{{uplaodFile}}"></mp-uploader>
+                </mp-cell>
+                <mp-cell>
+                    <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}"  files="{{files}}" max-count="9" title="家庭成员户口页上传" id="register" bindtap="showRegister" upload="{{uplaodFile}}"></mp-uploader>
+                </mp-cell>
+                <!-- <view class="page__hd">
+                </view> -->
+                <view class="page__bd">
+                    <mp-cells>
+                        <!-- <mp-cell>
+                            <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}" upload="{{uplaodFile}}" files="{{files}}" max-count="1" title="身份证正面上传"></mp-uploader>
+                        </mp-cell>
+                        <mp-cell>
+                            <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}" upload="{{uplaodFile}}" files="{{files}}" max-count="1" title="身份证反面上传"></mp-uploader>
+                        </mp-cell> -->
+                        <mp-cell prop="mobile" title="电话" ext-class="">
+                            <input bindinput="formInputChange1" data-field="mobile" class="weui-input" placeholder="请输入电话号码"/>
+                        </mp-cell>
+                    </mp-cells>
+                </view>
+            </mp-cells>
+            <mp-cells title="土地权源资料">
+                <mp-cell>
+                <view class="drawer_screen" bindtap="optionTaps" wx:if="{{shows}}"></view>
+                <view class='fenlei'>
+                <!-- 下拉框 -->
+                    <view class='select_box'>
+                    <view class='select' catchtap='selectTaps'>
+                        <view class='select_text'>{{selectDatas[indexs]}}</view>
+                        <!-- <image class='words_img' src='../../images/sanjiao.png'></image> -->
+                        <!-- <image class='select_img {{shows&&"select_img_rotate"}}' src='../../images/sanjiao.png'></image> -->
+                        <view class="iconfont icon-xiasanjiaoxing" style="color:green;" wx:if="{{!shows}}"></view>
+                         <view class="iconfont icon-shangsanjiaoxing" style="color:green;" wx:if="{{shows}}"></view>
+                    </view>
+                    <view class='option_box' style='height:{{shows?(selectDatas.length>5?300:selectDatas.length*120):0}}rpx;'>
+                        <text class='option' style='{{indexs==selectDatas.length-1&&"border:0;"}}' wx:for='{{selectDatas}}' wx:key='this' data-index='{{index}}' catchtap='optionTaps'>{{item}}</text>
+                    </view>
+                </view>
+                </view>
+                <view>
+                    <button class="addcertb" bindtap="showUploadImg"><view class="iconfont icon-tianjia" style="color:blue;float:right;"></view>添加证明材料</button>
+                </view>
+                <mp-cell wx:if="{{cameraShow}}">
+                    <block wx:for="{{certMat}}" wx:key bindtap='onAddMat'>
+                        <!-- <input value="{{item.id + item.name+'  '+item.sex}}" class='addfamily' disabled></input><button type="primary" size="mini" class="sel-btn" bindtap='onTapDel' data-text="{{item.id}}">删除</button><button size="mini" type="primary" class="sel-btn" bindtap="onTapAlt" data-statu="open" data-text="{{item.id}}">修改</button> -->
+                        <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}"  files="{{files}}" max-count="9"  title="{{item.id}}" upload="{{uplaodFile}}"></mp-uploader>
+                    </block>
+                </mp-cell>
+                </mp-cell>
+                <mp-cell show-error prop="idcard" title="土地证书号" ext-class="">
+                    <input bindinput="formInputChange1" data-field="idcard" class="weui-input" placeholder="请输入证书号"/>
+                </mp-cell>
+                <mp-cell prop="qq" title="土地地址" ext-class="">
+                    <input bindinput="formInputChange1" data-field="qq" class="weui-input" placeholder="请输入具体地址"/>
+                </mp-cell>
+                <mp-cell prop="qq" title="土地面积" ext-class="">
+                    <input bindinput="formInputChange1" data-field="qq" class="weui-input" placeholder="请输入土地面积"/>
+                </mp-cell>
+                <!-- <view class="weui-cells weui-cells_after-title"> -->
+                    <mp-cell title="土地属性">
+                        <view class="weui-cell weui-cell_select">
+                            <view class="weui-cell__bd">
+                                <picker bindchange="bindAccountChange" value="{{accountIndex}}" range="{{accounts}}">
+                                    <view class="weui-input">{{accounts[accountIndex]}}</view>
+                                </picker>
+                            </view>
+                        </view>
+                    </mp-cell>
+                <!-- </view> -->
+            </mp-cells>
+            <mp-cells title="房屋信息">
+                <!-- <label class="mustcheck" style="color:red;float:left;justify-content: center;">*</label> -->
+                <mp-cell prop="qq" title="建筑面积" ext-class="">
+                    <input bindinput="formInputChange1" data-field="qq" class="weui-input" placeholder="请输入建筑面积"/>
+                </mp-cell>
+                <mp-cell prop="date" title="产权日期" ext-class="">
+                    <view class="weui-cell weui-cell_select">
+                        <view class="weui-cell__bd">
+                            <picker data-field="date" mode="date" value="{{date}}" start="2015-09-01" end="2017-09-01" bindchange="bindDateChange">
+                                <view class="weui-input">{{date}}</view>
+                            </picker>
+                        </view>
+                    </view>
+                </mp-cell>
+                <mp-cell show-error prop="idcard" title="产权证书号" ext-class="">
+                    <input bindinput="formInputChange1" data-field="idcard" class="weui-input" placeholder="请输入证书号"/>
+                </mp-cell>
+            </mp-cells>
+            
+            <mp-cells title="家庭成员信息">
+                 <mp-cell>
+                    <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}"  files="{{files}}" max-count="1" title="户口本首页上传" id="fpregister" bindtap="showFpregister" upload="{{uplaodFile}}"></mp-uploader>
+                </mp-cell>
+                <view class="btn-area">
+                    <button style="margin:30rpx auto;width:40%;height:30%;background:#5BA4F7;font-size:10px;" type="primary" bindtap="powerDrawer" data-statu="open">++添加家庭成员</button>
+                </view>
+                <view wx:if="{{showFamStatus}}">
+                    <mp-cell>
+                        <block wx:for="{{obj}}" wx:key bindtap='onTapAdd'>
+                            <input value="{{item.id + item.name+'  '+item.sex}}" class='addfamily' disabled></input><button type="primary" size="mini" class="sel-btn" bindtap='onTapDel' data-text="{{item.id}}">删除</button><button size="mini" type="primary" class="sel-btn" bindtap="onTapAlt" data-statu="open" data-text="{{item.id}}">修改</button>
+                        </block>
+                    </mp-cell>
+                </view>
+                <view class="drawer_screen" bindtap="powerDrawer" data-statu="close" wx:if="{{showModalStatus}}"></view>
+                <!--content-->
+                <!--使用animation属性指定需要执行的动画-->
+                <view animation="{{animationData}}" class="drawer_box" wx:if="{{showModalStatus}}">
+                <view class="drawer_title">添加家庭成员</view>
+                <view class="drawer_content">
+                    <mp-cell prop="name" title="姓名" ext-class="">
+                    <input bindinput="formInputChange" data-field="name" class="weui-input" value="{{altName}}" placeholder="请输入姓名"/>
+                </mp-cell>
+                <mp-cell class="page-section-title" title="性别">
+                  <radio-group name="radio" bindchange="checkboxChange" data-check="check" style="margin-left:20%;">
+                    <label><radio checked="{{mchecked}}" value="man"/>男</label>
+                    <label style="margin-left:20rpx;"><radio checked="{{wchecked}}" value="woman"/>女</label>
+                  </radio-group>
+                </mp-cell>
+                <!-- <mp-cell class="page-section-title" title="是否户主">
+                  <radio-group name="radio" bindchange="radioChange" style="margin-left:20%;">
+                    <label><radio value="yes"/>是</label>
+                    <label style="margin-left:20rpx;"><radio value="no"/>否</label>
+                  </radio-group>
+                </mp-cell> -->
+                <mp-cell prop="mobile" title="电话" ext-class="">
+                    <input bindinput="formInputChange" data-field="mobile" class="weui-input" placeholder="请输入电话号码"/>
+                </mp-cell>
+                <mp-cell title="证件类型">
+                    <view class="weui-cell weui-cell_select">
+                        <view class="weui-cell__bd">
+                            <picker bindchange="bindAccountChange" value="{{cardIndex}}" range="{{cards}}">
+                                <view class="weui-input">{{cards[cardIndex]}}</view>
+                            </picker>
+                        </view>
+                    </view>
+                </mp-cell>
+                <mp-cell show-error prop="idcard" title="证件号码" ext-class="">
+                    <input bindinput="formInputChange" data-field="idcard" class="weui-input" placeholder="请输入证件号码"/>
+                </mp-cell>
+                <!-- <view class="page__hd">
+                </view> -->
+                <view class="page__bd">
+                    <mp-cells>
+                        <!-- <mp-cell>
+                            <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}" upload="{{uplaodFile}}" files="{{files}}" max-count="1" title="身份证正面上传"></mp-uploader>
+                        </mp-cell>
+                        <mp-cell>
+                            <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}" upload="{{uplaodFile}}" files="{{files}}" max-count="1" title="身份证反面上传"></mp-uploader>
+                        </mp-cell> -->
+                        <mp-cell>
+                         <!-- <block wx:for="{{obj}}" wx:key bindtap='onTapAdd'> -->
+                            <mp-uploader bindfail="uploadError" bindsuccess="uploadSuccess" select="{{selectFile}}" files="{{files}}" id="register" max-count="1" title="本人户口页上传" data-imgtext="{{personIndex}}" bindtap="showRegister" value="personIndex" upload="{{uplaodFile}}"></mp-uploader>
+                         <!-- </block> -->
+                        </mp-cell>
+                    </mp-cells>
+                </view>
+                <ocr-navigator bind:onSuccess="success" certificateType="idCard" opposite="{{false}}" data-idcardtext="{{personIndex}}">
+                    <button type="primary" data-idcardtext="{{personIndex}}">身份证正面识别</button>
+                </ocr-navigator>
+                <!-- <view class='showPic'>
+                    <view wx:for="{{imagesList}}" wx:for-item="image" wx:key="index" class="previewimg">  
+                        <image class='image' src="{{image}}" data-src="{{image}}" bindtap="previewCardImage"></image>  
+                    </view>  
+                    </view> -->
+                <ocr-navigator bind:onSuccess="success" certificateType="idCard" opposite="{{true}}" data-idcardtext="{{personIndex}}">
+                    <button type="primary" style="margin-top:20rpx;">身份证反面识别</button>
+                </ocr-navigator>
+                </view>
+                <view class="modal-footer">
+                    <view class="btn-cancel" bindtap="onCancel" data-status="cancel">取消</view>
+                    <view class="btn-confirm" bindtap="onConfirm" data-status="confirm">确定</view>
+                </view>
+                </view>
+            </mp-cells>
+            
+        <view class="weui-cells__title">备注</view>
+        <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell">
+                <view class="weui-cell__bd">
+                    <textarea class="weui-textarea" placeholder="" style="height: 4.3em" />
+                    <view class="weui-textarea-counter">0/200</view>
+                </view>
+            </view>
+        </view>
+        <checkbox-group bindchange="bindAgreeChange">
+            <label class="weui-agree" for="weuiAgree">
+                <view class="weui-agree__text">
+                    <checkbox class="weui-agree__checkbox" id="weuiAgree" value="agree" checked="{{isAgree}}" />
+                    <view class="weui-agree__checkbox-icon">
+                        <icon class="weui-agree__checkbox-icon-check" type="success_no_circle" size="9" wx:if="{{isAgree}}"></icon>
+                    </view>
+                    阅读并同意<navigator url="" class="weui-agree__link">《相关条款》</navigator>
+                </view>
+            </label>
+        </checkbox-group>
+       <view class="btn-area">
+        <button style="margin:30rpx auto;" type="primary" formType="submit">提交</button>
+        <button style="margin:30rpx auto;color:white;background:#D93333;" formType="reset">重置</button>
+       </view>
+       </form>
+       <!-- </form> -->
+    </view>
+</view>
+</view>
+<!-- <mp-toptips msg="{{error}}"  type="error" show="{{error}}"></mp-toptips> -->
+
+
+
+
